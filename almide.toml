@@ -1,0 +1,7 @@
+[package]
+name = "almide-web"
+version = "0.1.0"
+description = "Browser API bindings for Almide WASM (DOM, fetch, storage, timer, console)"
+
+[targets]
+wasm = true

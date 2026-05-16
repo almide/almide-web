@@ -1,0 +1,16 @@
+// almide-web — Browser API bindings for Almide WASM
+//
+// Provides @extern declarations for Web Platform APIs.
+// JS runtime (runtime/web.js) implements the host side.
+//
+// Modules:
+//   dom     — document, element, event, style
+//   fetch   — HTTP fetch (GET, POST, JSON)
+//   timer   — setTimeout, setInterval, requestAnimationFrame
+//   console — console.log, warn, error
+//   storage — localStorage, sessionStorage
+
+import self.dom as dom
+import self.fetch as fetch
+import self.timer as timer
+import self.console as console

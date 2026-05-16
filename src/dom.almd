@@ -1,0 +1,48 @@
+// almide-web/dom — DOM manipulation bindings
+//
+// String-based API: strings are interned via begin_str/push_byte/commit_str.
+// Elements are opaque Int handles managed by the JS runtime.
+
+// ── String interning ──
+
+@extern(wasm, "dom", "begin_str")
+fn begin_str() -> Unit = _
+
+@extern(wasm, "dom", "push_byte")
+fn push_byte(b: Int) -> Unit = _
+
+@extern(wasm, "dom", "commit_str")
+fn commit_str() -> Int = _
+
+// Convenience: intern a String, return string ID
+fn str(text: String) -> Int = {
+  begin_str()
+  for b in string.to_bytes(text) { push_byte(b) }
+  commit_str()
+}
+
+// ── Element operations ──
+
+@extern(wasm, "dom", "create_element")
+fn create_element(tag_id: Int) -> Int = _
+
+@extern(wasm, "dom", "set_text")
+fn set_text(el_id: Int, text_id: Int) -> Unit = _
+
+@extern(wasm, "dom", "set_attr")
+fn set_attr(el_id: Int, name_id: Int, val_id: Int) -> Unit = _
+
+@extern(wasm, "dom", "set_style")
+fn set_style(el_id: Int, prop_id: Int, val_id: Int) -> Unit = _
+
+@extern(wasm, "dom", "append_child")
+fn append_child(parent_id: Int, child_id: Int) -> Unit = _
+
+@extern(wasm, "dom", "get_offset_width")
+fn get_offset_width(el_id: Int) -> Float = _
+
+@extern(wasm, "dom", "clear_children")
+fn clear_children(el_id: Int) -> Unit = _
+
+@extern(wasm, "dom", "log")
+fn log(str_id: Int) -> Unit = _

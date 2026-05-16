@@ -1,0 +1,24 @@
+// almide-web/fetch — HTTP fetch bindings
+//
+// Async model: WASM calls fetch_get/fetch_post → JS does fetch() →
+// JS calls @export on_fetch_response with result.
+// Callback dispatch is managed by the application.
+
+// ── Request ──
+
+// Start a GET request. Returns request ID.
+// url_id: interned string ID from dom.str()
+@extern(wasm, "fetch", "get")
+fn get(url_id: Int) -> Int = _
+
+// Start a POST request with body. Returns request ID.
+@extern(wasm, "fetch", "post")
+fn post(url_id: Int, body_id: Int, content_type_id: Int) -> Int = _
+
+// ── Response handling ──
+// The JS runtime calls the application's @export callback with:
+//   (request_id: Int, status: Int, body_id: Int)
+// body_id is an interned string ID (0 on error).
+// The application must define:
+//   @export(wasm, "on_fetch_response")
+//   fn on_fetch_response(request_id: Int, status: Int, body_id: Int) -> Unit

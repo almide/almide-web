@@ -1,0 +1,26 @@
+// almide-web/timer — Timer bindings
+//
+// Timers call back into WASM via @export callbacks.
+// The application registers a callback ID and defines the handler.
+
+// Set a one-shot timer. Returns timer ID.
+// callback_id: application-defined ID passed back in the callback.
+// delay_ms: delay in milliseconds.
+@extern(wasm, "timer", "set_timeout")
+fn set_timeout(callback_id: Int, delay_ms: Int) -> Int = _
+
+// Set a repeating timer. Returns timer ID.
+@extern(wasm, "timer", "set_interval")
+fn set_interval(callback_id: Int, interval_ms: Int) -> Int = _
+
+// Cancel a timer.
+@extern(wasm, "timer", "clear_timer")
+fn clear_timer(timer_id: Int) -> Unit = _
+
+// Request animation frame. Returns frame ID.
+@extern(wasm, "timer", "request_animation_frame")
+fn request_animation_frame(callback_id: Int) -> Int = _
+
+// The JS runtime calls:
+//   @export(wasm, "on_timer")
+//   fn on_timer(callback_id: Int) -> Unit

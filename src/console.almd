@@ -1,0 +1,16 @@
+// almide-web/console — Console logging bindings
+
+@extern(wasm, "console", "log")
+fn log(str_id: Int) -> Unit = _
+
+@extern(wasm, "console", "warn")
+fn warn(str_id: Int) -> Unit = _
+
+@extern(wasm, "console", "error")
+fn error(str_id: Int) -> Unit = _
+
+@extern(wasm, "console", "log_int")
+fn log_int(value: Int) -> Unit = _
+
+@extern(wasm, "console", "log_float")
+fn log_float(value: Float) -> Unit = _
