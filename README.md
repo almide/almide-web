@@ -54,3 +54,21 @@ const { instance } = await WebAssembly.instantiate(wasmBytes, {
 - **almide-wasm-bindgen**: ABI layer (type marshalling). almide-web builds on top.
 - **ceangal**: UI framework. Uses almide-web for DOM + fetch.
 - **almide-bindgen**: Native FFI. Separate from web.
+
+## Testing (headless vectors)
+
+`spec/run_host_test.sh` builds `spec/host_app.almd` to wasm and runs it under
+`runtime/headless.mjs` — a Node.js reference implementation of the full import
+surface (virtual DOM handle table, captured console, deterministic timer/fetch
+event queue). The run's stdout is byte-diffed against
+`spec/expected_host_output.txt`. Every binding and the string-intern protocol
+(`begin_str`/`push_byte`/`commit_str`) plus both callback re-entries
+(`on_timer`, `on_fetch_response`) are exercised.
+
+```bash
+./spec/run_host_test.sh
+```
+
+The headless host doubles as the executable specification for
+`runtime/web.js` (the browser host implements the same semantics against the
+real DOM).

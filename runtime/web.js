@@ -18,6 +18,12 @@ export function pushString(s) { strings.push(s); return strings.length - 1; }
 
 // ── DOM imports ──
 
+// Element handle table: WASM sees opaque Int handles, JS maps them to real
+// nodes. Same semantics as the headless reference host (runtime/headless.mjs).
+const elements = [];
+export function getElement(id) { return elements[id]; }
+export function registerElement(el) { elements.push(el); return elements.length - 1; }
+
 export function createDomImports() {
   return {
     begin_str() { strBuf = []; },
@@ -27,15 +33,20 @@ export function createDomImports() {
       return B(strings.length - 1);
     },
     create_element(tagId) {
-      const el = document.createElement(strings[N(tagId)]);
-      return B(pushString(null) | 0); // TODO: use handle table
+      return B(registerElement(document.createElement(strings[N(tagId)])));
     },
-    set_text(elId, textId) { /* TODO: handle table */ },
-    set_attr(elId, nameId, valId) { /* TODO */ },
-    set_style(elId, propId, valId) { /* TODO */ },
-    append_child(parentId, childId) { /* TODO */ },
-    get_offset_width(elId) { return 0; /* TODO */ },
-    clear_children(elId) { /* TODO */ },
+    set_text(elId, textId) { elements[N(elId)].textContent = strings[N(textId)]; },
+    set_attr(elId, nameId, valId) {
+      elements[N(elId)].setAttribute(strings[N(nameId)], strings[N(valId)]);
+    },
+    set_style(elId, propId, valId) {
+      elements[N(elId)].style.setProperty(strings[N(propId)], strings[N(valId)]);
+    },
+    append_child(parentId, childId) {
+      elements[N(parentId)].appendChild(elements[N(childId)]);
+    },
+    get_offset_width(elId) { return elements[N(elId)].offsetWidth; },
+    clear_children(elId) { elements[N(elId)].replaceChildren(); },
     log(strId) { console.log("[almide-web]", strings[N(strId)]); },
   };
 }

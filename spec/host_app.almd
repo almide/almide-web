@@ -1,0 +1,52 @@
+// Executable binding vectors: exercises every almide-web import against the
+// headless host (runtime/headless.js). The expected stdout is pinned in
+// spec/expected_host_output.txt — the runner diffs byte-for-byte.
+
+import self.dom as dom
+import self.console as console
+import self.timer as timer
+import self.fetch as fetch
+
+effect fn main() -> Unit = {
+  // console surface
+  console.log(dom.str("hello-from-almide"))
+  console.warn(dom.str("warned"))
+  console.error(dom.str("errored"))
+  console.log_int(42)
+  console.log_float(2.5)
+
+  // dom tree: attrs, style, text, nesting
+  let root = dom.create_element(dom.str("div"))
+  dom.set_attr(root, dom.str("id"), dom.str("app"))
+  dom.set_style(root, dom.str("color"), dom.str("red"))
+  let child = dom.create_element(dom.str("span"))
+  dom.set_text(child, dom.str("child-text"))
+  dom.append_child(root, child)
+  console.log_float(dom.get_offset_width(child))
+  dom.log(dom.str("dom-log"))
+
+  // clear_children detaches (children become roots again)
+  let list_el = dom.create_element(dom.str("ul"))
+  let item = dom.create_element(dom.str("li"))
+  dom.set_text(item, dom.str("detached"))
+  dom.append_child(list_el, item)
+  dom.clear_children(list_el)
+
+  // timers: one fires, one is cancelled, interval fires twice
+  let _t1 = timer.set_timeout(7, 5)
+  let t2 = timer.set_timeout(8, 5)
+  timer.clear_timer(t2)
+  let _iv = timer.set_interval(9, 10)
+  let _raf = timer.request_animation_frame(11)
+
+  // fetch: GET hit, GET miss, POST echo
+  let _r1 = fetch.get(dom.str("test://ok"))
+  let _r2 = fetch.get(dom.str("test://missing"))
+  let _r3 = fetch.post(dom.str("test://post"), dom.str("k=1"), dom.str("application/json"))
+}
+
+pub effect fn on_timer(callback_id: Int) -> Unit =
+  console.log(dom.str("timer-fired:" + int.to_string(callback_id)))
+
+pub effect fn on_fetch_response(request_id: Int, status: Int, body_id: Int) -> Unit =
+  console.log(dom.str("fetch:" + int.to_string(request_id) + ":" + int.to_string(status) + ":body#" + int.to_string(body_id)))
