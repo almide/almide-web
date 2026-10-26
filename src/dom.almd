@@ -17,7 +17,7 @@ fn commit_str() -> Int = _
 // Convenience: intern a String, return string ID
 fn str(text: String) -> Int = {
   begin_str()
-  for b in string.to_bytes(text) { push_byte(b) }
+  for b in bytes.to_list(bytes.from_string(text)) { push_byte(b) }
   commit_str()
 }
 
